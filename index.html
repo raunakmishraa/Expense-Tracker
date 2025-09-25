@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExpenseTracker - Personal Finance Manager</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>ExpenseTracker</h2>
+                <p>Personal Finance Manager</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" data-tab="dashboard" class="menu-item active"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="#" data-tab="transactions" class="menu-item"><i class="fas fa-credit-card"></i> Transactions</a></li>
+                <li><a href="#" data-tab="accounts" class="menu-item"><i class="fas fa-plus-circle"></i> Accounts</a></li>
+                <li><a href="#" data-tab="analytics" class="menu-item"><i class="fas fa-chart-line"></i> Analytics</a></li>
+                <li><a href="#" data-tab="settings" class="menu-item"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="page-header">
+                    <h2>Dashboard</h2>
+                    <p>Overview of your financial activities</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Total Balance</p>
+                                <p class="stat-value text-blue" id="total-balance">NRs 0</p>
+                            </div>
+                            <div class="stat-icon bg-blue">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Monthly Income</p>
+                                <p class="stat-value text-green" id="monthly-income">NRs 0</p>
+                            </div>
+                            <div class="stat-icon bg-green">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Monthly Expenses</p>
+                                <p class="stat-value text-red" id="monthly-expenses">NRs 0</p>
+                            </div>
+                            <div class="stat-icon bg-red">
+                                <i class="fas fa-arrow-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div class="stat-info">
+                                <p class="stat-label">Monthly Transfers</p>
+                                <p class="stat-value text-purple" id="monthly-transfers">NRs 0</p>
+                            </div>
+                            <div class="stat-icon bg-purple">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Recent Transactions</h3>
+                        <div id="recent-transactions">
+                            <p class="empty-state">No recent transactions</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Account Balances</h3>
+                        <div id="account-balances">
+                            <p class="empty-state">No accounts added yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div id="transactions" class="tab-content">
+                <div class="page-header">
+                    <h2>Transactions</h2>
+                    <p>Manage your income, expenses, and transfers</p>
+                </div>
+
+                <div id="no-accounts-message" class="card text-center" style="display: none;">
+                    <div class="empty-icon">💳</div>
+                    <h3>No Accounts Found</h3>
+                    <p>You need to add at least one account before you can create transactions</p>
+                    <button class="btn btn-primary" onclick="switchTab('accounts')">Add Your First Account</button>
+                </div>
+
+                <div id="transaction-section">
+                    <button id="add-transaction-btn" class="btn btn-primary mb-4">
+                        <i class="fas fa-plus"></i> Add New Transaction
+                    </button>
+
+                    <!-- Transaction Form -->
+                    <div id="transaction-form" class="card" style="display: none;">
+                        <div class="form-header">
+                            <h3>Add New Transaction</h3>
+                            <button id="close-form-btn" class="close-btn">&times;</button>
+                        </div>
+                        <form id="transaction-form-element">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Transaction Type</label>
+                                    <select id="transaction-type" required>
+                                        <option value="income">Income</option>
+                                        <option value="expense" selected>Expense</option>
+                                        <option value="transfer">Transfer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount (NRs)</label>
+                                    <input type="number" id="transaction-amount" step="0.01" min="0" required placeholder="0.00">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    <input type="date" id="transaction-date" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group" id="category-group">
+                                <label>Category</label>
+                                <select id="transaction-category" required>
+                                    <option value="">Select a category</option>
+                                </select>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label id="from-account-label">Account</label>
+                                    <select id="from-account" required>
+                                        <option value="">Select account</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" id="to-account-group" style="display: none;">
+                                    <label>To Account</label>
+                                    <select id="to-account">
+                                        <option value="">Select destination account</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" id="transaction-description" required placeholder="Enter transaction description">
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Transaction
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="cancel-form-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Transaction Filters -->
+                    <div class="card">
+                        <div class="filter-header">
+                            <button id="toggle-filters" class="btn btn-secondary">
+                                <i class="fas fa-filter"></i> Filters
+                            </button>
+                            <button id="clear-filters" class="btn btn-link" style="display: none;">
+                                <i class="fas fa-times"></i> Clear All
+                            </button>
+                        </div>
+                        <div id="filter-content" style="display: none;">
+                            <div class="filter-section">
+                                <label>Date Range</label>
+                                <div class="filter-buttons">
+                                    <button class="filter-btn active" data-filter="all">All Time</button>
+                                    <button class="filter-btn" data-filter="1week">Last Week</button>
+                                    <button class="filter-btn" data-filter="1month">Last Month</button>
+                                    <button class="filter-btn" data-filter="1year">Last Year</button>
+                                    <button class="filter-btn" data-filter="custom">Custom Range</button>
+                                </div>
+                            </div>
+                            <div id="custom-date-range" style="display: none;">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Start Date</label>
+                                        <input type="date" id="custom-start-date">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>End Date</label>
+                                        <input type="date" id="custom-end-date">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="filter-section">
+                                <label>Transaction Types</label>
+                                <div class="filter-buttons">
+                                    <button class="filter-btn type-filter active" data-type="income">Income</button>
+                                    <button class="filter-btn type-filter active" data-type="expense">Expense</button>
+                                    <button class="filter-btn type-filter active" data-type="transfer">Transfer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="transaction-count">Transaction History (0)</h3>
+                        </div>
+                        <div id="transaction-list">
+                            <div class="empty-state">
+                                <div class="empty-icon">📊</div>
+                                <h3>No Transactions Found</h3>
+                                <p>Transactions matching your filters will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accounts Tab -->
+            <div id="accounts" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h2>Account Management</h2>
+                    </div>
+                    <button id="add-account-btn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Account
+                    </button>
+                </div>
+
+                <!-- Account Form -->
+                <div id="account-form" class="card" style="display: none;">
+                    <div class="form-header">
+                        <h3 id="account-form-title">Add New Account</h3>
+                        <button id="close-account-form-btn" class="close-btn">&times;</button>
+                    </div>
+                    <form id="account-form-element">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Account Name</label>
+                                <input type="text" id="account-name" required placeholder="e.g., Main Checking, Savings, Cash Wallet">
+                            </div>
+                            <div class="form-group">
+                                <label>Account Type</label>
+                                <select id="account-type" required>
+                                    <option value="checking">Checking</option>
+                                    <option value="savings">Savings</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="credit">Credit Card</option>
+                                    <option value="investment">Investment</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Current Balance</label>
+                                <input type="number" id="account-balance" step="0.01" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Color</label>
+                                <div class="color-picker">
+                                    <div class="color-option active" data-color="#3B82F6" style="background-color: #3B82F6;"></div>
+                                    <div class="color-option" data-color="#10B981" style="background-color: #10B981;"></div>
+                                    <div class="color-option" data-color="#F59E0B" style="background-color: #F59E0B;"></div>
+                                    <div class="color-option" data-color="#EF4444" style="background-color: #EF4444;"></div>
+                                    <div class="color-option" data-color="#8B5CF6" style="background-color: #8B5CF6;"></div>
+                                    <div class="color-option" data-color="#06B6D4" style="background-color: #06B6D4;"></div>
+                                    <div class="color-option" data-color="#84CC16" style="background-color: #84CC16;"></div>
+                                    <div class="color-option" data-color="#F97316" style="background-color: #F97316;"></div>
+                                    <div class="color-option" data-color="#EC4899" style="background-color: #EC4899;"></div>
+                                    <div class="color-option" data-color="#6B7280" style="background-color: #6B7280;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="account-submit-btn">Add Account</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-account-form-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Accounts Grid -->
+                <div id="accounts-grid" class="accounts-grid">
+                    <div class="empty-state">
+                        <div class="empty-icon">💳</div>
+                        <h3>No Accounts Added</h3>
+                        <p>Add your first account to start tracking transactions</p>
+                        <button class="btn btn-primary" onclick="$('#add-account-btn').click()">Add Your First Account</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="page-header">
+                    <h2>Analytics</h2>
+                    <p>Visual insights into your financial data</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Income</h3>
+                        <p class="stat-value text-green" id="total-income">NRs 0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Expenses</h3>
+                        <p class="stat-value text-red" id="total-expenses">NRs 0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Net Income</h3>
+                        <p class="stat-value" id="net-income">NRs 0</p>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="card">
+                        <h3>Monthly Income vs Expenses</h3>
+                        <canvas id="monthly-chart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3>Expense Categories</h3>
+                        <canvas id="expense-pie-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div id="no-analytics-data" class="card text-center" style="display: none;">
+                    <div class="empty-icon">📊</div>
+                    <h3>No Data Available</h3>
+                    <p>Add some transactions to see analytics and charts</p>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="page-header">
+                    <h2>Settings</h2>
+                    <p>Manage your data and preferences</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="card">
+                        <h3>Data Management</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Export Data</h4>
+                                <p>Download all your transactions as a CSV file for backup or external analysis.</p>
+                            </div>
+                            <button id="export-data-btn" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                        </div>
+                        <div class="setting-item danger">
+                            <div class="setting-info">
+                                <h4>Clear All Data</h4>
+                                <p>Permanently delete all transactions and accounts. This action cannot be undone.</p>
+                            </div>
+                            <button id="clear-data-btn" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Statistics</h3>
+                        <div class="stats-list">
+                            <div class="stat-row">
+                                <span>Total Transactions</span>
+                                <span id="total-transactions-count">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Total Accounts</span>
+                                <span id="total-accounts-count">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Income Transactions</span>
+                                <span class="text-green" id="income-transactions-count">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Expense Transactions</span>
+                                <span class="text-red" id="expense-transactions-count">0</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>Transfer Transactions</span>
+                                <span class="text-blue" id="transfer-transactions-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>About</h3>
+                    <div class="about-content">
+                        <p><strong>ExpenseTracker v1.0</strong></p>
+                        <p>A comprehensive personal finance management application to track your daily expenses, income, and transfers between accounts.</p>
+                        <p>Features include categorized transactions, visual analytics, account management, and data export capabilities.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle text-red"></i>
+                <h3>Confirm Data Deletion</h3>
+            </div>
+            <p>Are you sure you want to delete all your transactions and accounts? This action cannot be undone and you will lose all your financial data.</p>
+            <div class="modal-actions">
+                <button id="confirm-clear-btn" class="btn btn-danger">Yes, Delete Everything</button>
+                <button id="cancel-clear-btn" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
