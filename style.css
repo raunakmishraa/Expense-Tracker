@@ -545,6 +545,19 @@ body {
     gap: 24px;
 }
 
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.chart-container canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
 /* Settings */
 .settings-grid {
     display: grid;
