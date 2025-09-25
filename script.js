@@ -705,6 +705,11 @@ function updateAnalytics() {
 function createMonthlyChart() {
     const ctx = document.getElementById('monthly-chart').getContext('2d');
     
+    // Destroy existing chart if it exists
+    if (window.monthlyChart) {
+        window.monthlyChart.destroy();
+    }
+    
     // Get last 6 months data
     const months = [];
     const now = new Date();
@@ -738,7 +743,7 @@ function createMonthlyChart() {
         };
     });
     
-    new Chart(ctx, {
+    window.monthlyChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: monthlyData.map(d => d.month),
@@ -761,10 +766,31 @@ function createMonthlyChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'NRs ' + value.toLocaleString();
+                        }
+                    }
+                }
+            },
             plugins: {
                 legend: {
                     position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': NRs ' + context.parsed.y.toLocaleString();
+                        }
+                    }
                 }
             }
         }
@@ -773,6 +799,11 @@ function createMonthlyChart() {
 
 function createExpensePieChart() {
     const ctx = document.getElementById('expense-pie-chart').getContext('2d');
+    
+    // Destroy existing chart if it exists
+    if (window.expenseChart) {
+        window.expenseChart.destroy();
+    }
     
     const expenseCategories = transactions
         .filter(t => t.type === 'expense')
@@ -792,7 +823,7 @@ function createExpensePieChart() {
         return;
     }
     
-    new Chart(ctx, {
+    window.expenseChart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
@@ -809,10 +840,19 @@ function createExpensePieChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
                     position: 'right'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                            return context.label + ': NRs ' + context.parsed.toLocaleString() + ' (' + percentage + '%)';
+                        }
+                    }
                 }
             }
         }
