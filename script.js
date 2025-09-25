@@ -20,7 +20,7 @@ const categories = {
     expense: [
         { name: 'Household Needs', icon: '🏠', color: '#EF4444' },
         { name: 'Food & Groceries', icon: '🛒', color: '#DC2626' },
-        { name: 'Transportation', icon: '🚌', color: '#B91C1C' },
+        { name: 'Recharge & Bills', icon: '🚌', color: '#B91C1C' },
         { name: 'Pathao/inDrive', icon: '🚗', color: '#991B1B' },
         { name: 'Entertainment', icon: '🎉', color: '#7C2D12' },
         { name: 'Tea & Friends', icon: '☕', color: '#A16207' },
@@ -170,7 +170,9 @@ function handleAccountSubmit(e) {
     e.preventDefault();
     
     const accountData = {
+        bank: $('#bank-name').val(),
         name: $('#account-name').val(),
+        acc_number: $("#account-number").val(),
         type: $('#account-type').val(),
         balance: parseFloat($('#account-balance').val()) || 0,
         color: $('.color-option.active').data('color')
@@ -232,6 +234,7 @@ function updateAccountsDisplay() {
                     </div>
                     <div class="account-details">
                         <h4>${account.name}</h4>
+                        <p>${account.bank}</p>
                         <p>${account.type}</p>
                     </div>
                 </div>
@@ -274,7 +277,7 @@ function hideTransactionForm() {
 
 function updateAccountSelects() {
     const accountOptions = accounts.map(account => 
-        `<option value="${account.id}">${account.name} (${formatCurrency(account.balance)})</option>`
+        `<option value="${account.id}">${account.bank} (${formatCurrency(account.balance)})</option>`
     ).join('');
     
     $('#from-account').html('<option value="">Select account</option>' + accountOptions);
@@ -321,7 +324,7 @@ function handleTransactionTypeChange() {
             const fromAccountId = $(this).val();
             const toAccountOptions = accounts
                 .filter(account => account.id !== fromAccountId)
-                .map(account => `<option value="${account.id}">${account.name} (${formatCurrency(account.balance)})</option>`)
+                .map(account => `<option value="${account.id}">${account.bank} (${formatCurrency(account.balance)})</option>`)
                 .join('');
             $('#to-account').html('<option value="">Select destination account</option>' + toAccountOptions);
         }
@@ -336,6 +339,7 @@ function handleTransactionSubmit(e) {
         category: $('#transaction-category').val() || 'Transfer',
         amount: parseFloat($('#transaction-amount').val()),
         description: $('#transaction-description').val(),
+        remarks: $('#transaction-remarks').val(),
         date: new Date($('#transaction-date').val()),
         accountId: $('#from-account').val(),
         toAccountId: $('#to-account').val() || null
@@ -463,8 +467,8 @@ function updateTransactionsDisplay() {
                         <div class="transaction-meta">
                             ${formatDate(transaction.date)} • 
                             ${transaction.type === 'transfer' 
-                                ? `${account?.name} → ${toAccount?.name}`
-                                : `${transaction.category} • ${account?.name}`
+                                ? `${account?.bank} → ${toAccount?.bank}`
+                                : `${transaction.category} • ${account?.bank} • ${transaction.remarks}`
                             }
                         </div>
                     </div>
